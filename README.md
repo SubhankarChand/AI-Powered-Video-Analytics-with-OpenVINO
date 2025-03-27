@@ -12,7 +12,7 @@ This project leverages AI and OpenVINO to analyze customer sentiment and feedbac
 ## 🏗️ Tech Stack
 - **Programming Language**: Python
 - **AI Frameworks**: TensorFlow, PyTorch, OpenVINO
-- **Deployment**: Flask/FastAPI, Docker
+- **Deployment**: Flask, Docker
 - **Visualization**: Matplotlib, Seaborn, Plotly
 
 ## 📂 Project Structure
@@ -81,4 +81,4 @@ docker run -p 5000:5000 sentiment-analysis-app
 Feel free to contribute by opening issues or submitting pull requests!
 
 ## 📜 License
-This project is licensed under the MIT License.
+
