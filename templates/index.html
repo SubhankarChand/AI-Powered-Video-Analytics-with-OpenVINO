@@ -34,9 +34,25 @@
             padding-bottom: 15px;
         }
 
-        .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
-        .header .status { font-size: 14px; color: var(--success); display: flex; align-items: center; gap: 8px; }
+        .header-left h1 { margin: 0; font-size: 24px; font-weight: 600; }
+        .header-left .status { font-size: 14px; color: var(--success); display: flex; align-items: center; gap: 8px; margin-top: 5px; }
         .pulsing-dot { width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+
+        /* NEW: Download Button Style */
+        .btn-download {
+            background-color: var(--accent);
+            color: #0f172a;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .btn-download:hover { background-color: #0ea5e9; transform: translateY(-2px); }
 
         .dashboard-grid {
             display: grid;
@@ -46,7 +62,6 @@
             margin: 0 auto;
         }
 
-        /* Video Section */
         .video-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -57,32 +72,10 @@
             overflow: hidden;
         }
         
-        .video-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            display: block;
-        }
+        .video-card img { width: 100%; height: auto; border-radius: 8px; display: block; }
+        .live-badge { position: absolute; top: 20px; left: 20px; background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
 
-        .live-badge {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(220, 38, 38, 0.9);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        /* Stats Sidebar */
-        .stats-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        .stats-panel { display: flex; flex-direction: column; gap: 20px; }
 
         .stat-card {
             background: var(--card-bg);
@@ -94,57 +87,24 @@
             gap: 15px;
         }
 
-        .icon-box {
-            width: 50px;
-            height: 50px;
-            background: rgba(56, 189, 248, 0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent);
-            font-size: 20px;
-        }
-
+        .icon-box { width: 50px; height: 50px; background: rgba(56, 189, 248, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 20px; }
         .stat-info h3 { margin: 0; font-size: 14px; color: var(--text-muted); font-weight: 500; }
         .stat-info p { margin: 5px 0 0; font-size: 28px; font-weight: 700; }
 
-        .chart-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            height: 300px;
-            position: relative;
-        }
-
-        .table-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            flex-grow: 1;
-        }
+        .chart-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #334155; height: 300px; }
+        .table-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #334155; flex-grow: 1; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { text-align: left; color: var(--text-muted); font-size: 12px; padding: 10px 0; border-bottom: 1px solid #334155; }
         td { padding: 12px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }
         
-        .emotion-tag {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-
-        /* Strict Color Mapping */
-        .emo-neutral { background: #94a3b8; color: white; } /* Grey */
-        .emo-happy { background: #22c55e; color: white; }   /* Green */
-        .emo-sad { background: #3b82f6; color: white; }     /* Blue */
-        .emo-anger { background: #ef4444; color: white; }   /* Red */
-        .emo-surprise { background: #eab308; color: white; } /* Yellow */
-        .emo-unknown { background: #475569; color: white; } /* Dark Grey */
+        .emotion-tag { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
+        .emo-neutral { background: #94a3b8; color: white; }
+        .emo-happy { background: #22c55e; color: white; }
+        .emo-sad { background: #3b82f6; color: white; }
+        .emo-anger { background: #ef4444; color: white; }
+        .emo-surprise { background: #eab308; color: white; }
+        .emo-unknown { background: #475569; color: white; }
 
         @keyframes pulse {
             0% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
@@ -155,11 +115,16 @@
 </head>
 <body>
     <div class="header">
-        <h1><i class="fas fa-eye"></i> AI Vision Analytics</h1>
-        <div class="status">
-            <div class="pulsing-dot"></div>
-            System Online
+        <div class="header-left">
+            <h1><i class="fas fa-eye"></i> AI Vision Analytics</h1>
+            <div class="status">
+                <div class="pulsing-dot"></div>
+                System Online
+            </div>
         </div>
+        <a href="/download_report" class="btn-download">
+            <i class="fas fa-download"></i> Download Report
+        </a>
     </div>
 
     <div class="dashboard-grid">
@@ -209,42 +174,17 @@
     </div>
 
     <script>
-        const emotionColors = {
-            'neutral': '#94a3b8',
-            'happy': '#22c55e',
-            'sad': '#3b82f6',
-            'anger': '#ef4444',
-            'surprise': '#eab308',
-            'waiting': '#1e293b'
-        };
-
+        const emotionColors = { 'neutral': '#94a3b8', 'happy': '#22c55e', 'sad': '#3b82f6', 'anger': '#ef4444', 'surprise': '#eab308', 'waiting': '#1e293b' };
         const ctx = document.getElementById('emotionChart').getContext('2d');
         const emotionChart = new Chart(ctx, {
             type: 'doughnut',
-            data: {
-                labels: ['Waiting'],
-                datasets: [{
-                    data: [1],
-                    backgroundColor: [emotionColors['waiting']],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, padding: 20 } }
-                },
-                cutout: '75%'
-            }
+            data: { labels: ['Waiting'], datasets: [{ data: [1], backgroundColor: [emotionColors['waiting']], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } }, cutout: '75%' }
         });
 
         const ws = new WebSocket(`ws://${window.location.host}/updates`);
-
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
-
             document.getElementById('totalVisitors').textContent = data.total_visitors;
             document.getElementById('activeVisitors').textContent = data.active_visitors;
 
@@ -264,17 +204,13 @@
 
             const tbody = document.querySelector('#logTable tbody');
             tbody.innerHTML = ''; 
-            
             if (data.active_list && data.active_list.length > 0) {
                 data.active_list.forEach(person => {
                     const emoClass = person.emotion ? `emo-${person.emotion}` : 'emo-neutral';
                     const emoText = person.emotion || 'detecting...';
-                    const row = `<tr><td>#${person.id}</td><td style="color:#22c55e; font-size:12px;">● Live</td><td><span class="emotion-tag ${emoClass}">${emoText}</span></td></tr>`;
-                    tbody.innerHTML += row;
+                    tbody.innerHTML += `<tr><td>#${person.id}</td><td style="color:#22c55e; font-size:12px;">● Live</td><td><span class="emotion-tag ${emoClass}">${emoText}</span></td></tr>`;
                 });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#475569; padding:20px; font-size:13px;">Waiting for visitors...</td></tr>';
-            }
+            } else { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#475569; padding:20px;">Waiting...</td></tr>'; }
         };
     </script>
 </body>

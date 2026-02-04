@@ -3,7 +3,9 @@ import time
 import logging
 import numpy as np
 import os
-from flask import Flask, render_template, Response
+import csv
+import io
+from flask import Flask, render_template, Response, make_response
 from flask_sock import Sock
 import json
 from datetime import datetime
@@ -43,13 +45,16 @@ class AllInOneProcessor:
         self.tracked_objects = {}
         self.next_id = 1
         self.visitor_count = 0
+        
+        # --- NEW: History Logger for CSV ---
+        # Stores: { id: { 'entry_time': str, 'emotions': [] } }
+        self.visit_history = {} 
 
     def process_frame(self, frame):
         if frame is None: return frame
         
         # 1. DETECT PEOPLE
         if self.yolo_model:
-            # Sensitive detection (0.25)
             results = self.yolo_model(frame, verbose=False, conf=0.25)
             detections = []
             for result in results:
@@ -84,8 +89,13 @@ class AllInOneProcessor:
                 self.visitor_count += 1
                 self.tracked_objects[best_id] = {
                     'frames_unseen': 0, 
-                    'emotion': deque(maxlen=10), # Smoother emotions
+                    'emotion': deque(maxlen=10),
                     'current_emotion': "detecting..."
+                }
+                # --- NEW: Log entry time ---
+                self.visit_history[best_id] = {
+                    'entry_time': datetime.now().strftime("%H:%M:%S"),
+                    'emotions': []
                 }
             
             self.tracked_objects[best_id]['box'] = box
@@ -104,13 +114,15 @@ class AllInOneProcessor:
                         emotion = self.emotion_labels[np.argmax(res.flatten())]
                         self.tracked_objects[best_id]['emotion'].append(emotion)
                         
-                        # Update dominant emotion immediately
+                        # Update live tracker
                         emotions = self.tracked_objects[best_id]['emotion']
                         if emotions:
-                            self.tracked_objects[best_id]['current_emotion'] = max(set(emotions), key=emotions.count)
+                            dom = max(set(emotions), key=emotions.count)
+                            self.tracked_objects[best_id]['current_emotion'] = dom
+                            # --- NEW: Save to history ---
+                            self.visit_history[best_id]['emotions'].append(dom)
                     except: pass
 
-        # Cleanup
         cleanup = []
         for tid in self.tracked_objects:
             if tid not in active_ids:
@@ -124,14 +136,8 @@ class AllInOneProcessor:
             if tdata['frames_unseen'] == 0:
                 x1, y1, x2, y2 = tdata['box']
                 emo = tdata['current_emotion']
-                
-                # Professional UI on Video
-                # Corner bracket style
-                color = (0, 255, 200) # Neon Teal
-                t = 2 # thickness
-                d = 20 # dash length
-                
-                # Draw only corners
+                color = (0, 255, 200)
+                t, d = 2, 20
                 cv2.line(frame, (x1, y1), (x1+d, y1), color, t)
                 cv2.line(frame, (x1, y1), (x1, y1+d), color, t)
                 cv2.line(frame, (x2, y1), (x2-d, y1), color, t)
@@ -140,35 +146,22 @@ class AllInOneProcessor:
                 cv2.line(frame, (x1, y2), (x1, y2-d), color, t)
                 cv2.line(frame, (x2, y2), (x2-d, y2), color, t)
                 cv2.line(frame, (x2, y2), (x2, y2-d), color, t)
-
-                # Text Label
                 label = f"ID:{tid} | {emo.upper()}"
                 (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                 cv2.rectangle(frame, (x1, y1-20), (x1+w+10, y1), color, -1)
                 cv2.putText(frame, label, (x1+5, y1-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-        
         return frame
     
     def get_stats(self):
         active_list = []
         emotion_counts = defaultdict(int)
-        
         for tid, tdata in self.tracked_objects.items():
-            # Only count active people for the live chart
             if tdata['frames_unseen'] < 5:
                 emo = tdata['current_emotion']
                 emotion_counts[emo] += 1
-                active_list.append({
-                    'id': tid,
-                    'emotion': emo,
-                    'last_seen': "Now"
-                })
-        
-        # Ensure 'neutral' has at least 0 to prevent empty charts if needed
-        if not emotion_counts:
-            emotion_counts['waiting'] = 1
-        elif 'waiting' in emotion_counts and len(emotion_counts) > 1:
-            del emotion_counts['waiting']
+                active_list.append({'id': tid, 'emotion': emo, 'last_seen': "Now"})
+        if not emotion_counts: emotion_counts['waiting'] = 1
+        elif 'waiting' in emotion_counts and len(emotion_counts) > 1: del emotion_counts['waiting']
 
         return {
             'total_visitors': self.visitor_count,
@@ -178,6 +171,20 @@ class AllInOneProcessor:
             'timestamp': datetime.now().isoformat()
         }
 
+    # --- NEW: Generate CSV Data ---
+    def generate_report(self):
+        si = io.StringIO()
+        cw = csv.writer(si)
+        cw.writerow(['Visitor ID', 'Entry Time', 'Dominant Emotion', 'All Emotions Detected'])
+        
+        for vid, data in self.visit_history.items():
+            # Find most frequent emotion
+            emos = data['emotions']
+            dom = max(set(emos), key=emos.count) if emos else "Neutral"
+            cw.writerow([vid, data['entry_time'], dom, ", ".join(emos[:5]) + "..."])
+            
+        return si.getvalue()
+
 processor = AllInOneProcessor()
 
 @app.route('/')
@@ -186,12 +193,21 @@ def index(): return render_template('index.html')
 @app.route('/video_feed')
 def video_feed(): return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# --- NEW: Download Route ---
+@app.route('/download_report')
+def download_report():
+    csv_data = processor.generate_report()
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = "attachment; filename=visitor_report.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
+
 @sock.route('/updates')
 def updates(ws):
     while True:
         try:
             ws.send(json.dumps(processor.get_stats()))
-            time.sleep(0.5) # Faster updates for smoother UI
+            time.sleep(0.5)
         except: break
 
 def gen_frames():
