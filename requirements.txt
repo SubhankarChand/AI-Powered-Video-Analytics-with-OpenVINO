@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 flask
 opencv-python
 numpy
@@ -7,4 +8,16 @@ deep-sort-realtime
 face-recognition
 flask==2.3.2
 flask-sock==0.6.0
+=======
+flask
+opencv-python
+numpy
+torch
+ultralytics
+deep-sort-realtime
+face-recognition
+dlib
+flask==2.3.2
+flask-sock==0.6.0
+>>>>>>> ba12f128de8ab2a98b30f7b5f29e084a911c2abd
 opencv-python==4.7.0.72
