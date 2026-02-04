@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -210,14 +209,13 @@
     </div>
 
     <script>
-        // Define Exact Colors for Each Emotion
         const emotionColors = {
-            'neutral': '#94a3b8',  // Grey
-            'happy': '#22c55e',    // Green
-            'sad': '#3b82f6',      // Blue
-            'anger': '#ef4444',    // Red
-            'surprise': '#eab308', // Yellow
-            'waiting': '#1e293b'   // Dark Background (Empty)
+            'neutral': '#94a3b8',
+            'happy': '#22c55e',
+            'sad': '#3b82f6',
+            'anger': '#ef4444',
+            'surprise': '#eab308',
+            'waiting': '#1e293b'
         };
 
         const ctx = document.getElementById('emotionChart').getContext('2d');
@@ -236,42 +234,27 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { 
-                        position: 'right', 
-                        labels: { 
-                            color: '#94a3b8', 
-                            font: { size: 11 },
-                            padding: 20
-                        } 
-                    }
+                    legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, padding: 20 } }
                 },
                 cutout: '75%'
             }
         });
 
-        // WebSocket Connection
         const ws = new WebSocket(`ws://${window.location.host}/updates`);
 
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
 
-            // 1. Update Counters
             document.getElementById('totalVisitors').textContent = data.total_visitors;
             document.getElementById('activeVisitors').textContent = data.active_visitors;
 
-            // 2. Update Chart with Correct Colors
             if (data.emotion_stats && Object.keys(data.emotion_stats).length > 0) {
-                // Filter out 'waiting' if real data exists
                 const validStats = {...data.emotion_stats};
                 delete validStats['waiting'];
-                
                 if (Object.keys(validStats).length > 0) {
                     const labels = Object.keys(validStats);
                     const values = Object.values(validStats);
-                    
-                    // Map the correct color for each label
                     const bgColors = labels.map(label => emotionColors[label] || '#94a3b8');
-
                     emotionChart.data.labels = labels.map(l => l.toUpperCase());
                     emotionChart.data.datasets[0].data = values;
                     emotionChart.data.datasets[0].backgroundColor = bgColors;
@@ -279,23 +262,14 @@
                 }
             }
 
-            // 3. Update Table
             const tbody = document.querySelector('#logTable tbody');
             tbody.innerHTML = ''; 
             
             if (data.active_list && data.active_list.length > 0) {
                 data.active_list.forEach(person => {
-                    // Use a fallback if emotion is undefined
                     const emoClass = person.emotion ? `emo-${person.emotion}` : 'emo-neutral';
                     const emoText = person.emotion || 'detecting...';
-                    
-                    const row = `
-                        <tr>
-                            <td>#${person.id}</td>
-                            <td style="color:#22c55e; font-size:12px;">● Live</td>
-                            <td><span class="emotion-tag ${emoClass}">${emoText}</span></td>
-                        </tr>
-                    `;
+                    const row = `<tr><td>#${person.id}</td><td style="color:#22c55e; font-size:12px;">● Live</td><td><span class="emotion-tag ${emoClass}">${emoText}</span></td></tr>`;
                     tbody.innerHTML += row;
                 });
             } else {
@@ -304,189 +278,4 @@
         };
     </script>
 </body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Customer Analytics</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        .container { 
-            display: flex; 
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .video-container { 
-            flex: 2; 
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .analytics-container { 
-            flex: 1; 
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        #videoFeed { 
-            width: 100%; 
-            border-radius: 4px;
-            display: block;
-        }
-        .stats { 
-            margin-top: 20px; 
-        }
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 8px 12px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .chart-container {
-            margin-top: 20px;
-            height: 250px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        h2, h3 {
-            color: #444;
-        }
-        .alert {
-            color: #d9534f;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>Customer Analytics Dashboard</h1>
-    
-    <div class="container">
-        <div class="video-container">
-            <div class="status-bar">
-                <div id="connectionStatus">🟢 Connected</div>
-                <div>Last update: <span id="updateTime">Just now</span></div>
-                <div>FPS: <span id="fpsCounter">0</span></div>
-            </div>
-            <img id="videoFeed" src="{{ url_for('video_feed') }}">
-        </div>
-        
-        <div class="analytics-container">
-            <h2>Real-time Analytics</h2>
-            
-            <div class="stats">
-                <h3>Visitor Count</h3>
-                <p>Total Visitors: <span id="totalVisitors">0</span></p>
-                <p>Active Visitors: <span id="activeVisitors">0</span></p>
-            </div>
-            
-            <div class="stats">
-                <h3>Emotion Analysis</h3>
-                <div id="emotionCounts"></div>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="emotionChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Initialize chart
-        const ctx = document.getElementById('emotionChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: [],
-                datasets: [{
-                    data: [],
-                    backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right'
-                    }
-                }
-            }
-        });
-
-        // WebSocket connection
-        const ws = new WebSocket(`ws://${window.location.host}/updates`);
-        let lastUpdate = Date.now();
-        
-        // Update UI elements
-        function updateDashboard(data) {
-            // Visitor counts
-            document.getElementById('totalVisitors').textContent = data.total_visitors;
-            document.getElementById('activeVisitors').textContent = data.active_visitors;
-            
-            // FPS counter
-            document.getElementById('fpsCounter').textContent = data.fps || 0;
-            
-            // Emotion counts
-            let emotionHtml = '';
-            for (const [emotion, count] of Object.entries(data.emotion_stats || {})) {
-                emotionHtml += `<p>${emotion.charAt(0).toUpperCase() + emotion.slice(1)}: ${count}</p>`;
-            }
-            document.getElementById('emotionCounts').innerHTML = emotionHtml || '<p>No emotion data</p>';
-            
-            // Update chart
-            if (data.emotion_stats) {
-                chart.data.labels = Object.keys(data.emotion_stats).map(e => 
-                    e.charAt(0).toUpperCase() + e.slice(1));
-                chart.data.datasets[0].data = Object.values(data.emotion_stats);
-                chart.update();
-            }
-            
-            // Update timestamp
-            lastUpdate = Date.now();
-            document.getElementById('updateTime').textContent = 
-                new Date(data.timestamp).toLocaleTimeString();
-        }
-        
-        // Connection handling
-        ws.onmessage = function(event) {
-            updateDashboard(JSON.parse(event.data));
-        };
-        
-        ws.onclose = function() {
-            document.getElementById('connectionStatus').innerHTML = 
-                '<span class="alert">🔴 Disconnected - Attempting to reconnect...</span>';
-            setTimeout(() => location.reload(), 2000);
-        };
-        
-        ws.onerror = function(error) {
-            console.error('WebSocket error:', error);
-        };
-        
-        // Update "time ago" indicator
-        setInterval(() => {
-            const seconds = Math.floor((Date.now() - lastUpdate)/1000);
-            if (seconds > 5) {
-                document.getElementById('updateTime').textContent = 
-                    `${seconds} seconds ago`;
-            }
-        }, 1000);
-    </script>
-</body>
->>>>>>> ba12f128de8ab2a98b30f7b5f29e084a911c2abd
 </html>
