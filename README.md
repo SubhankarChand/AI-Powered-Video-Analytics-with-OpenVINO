@@ -1,84 +1,77 @@
-# AI-Powered Customer Sentiment & Feedback Analysis
+# AI-Powered Video Analytics with OpenVINO
 
 ## 🚀 Project Overview
-This project leverages AI and OpenVINO to analyze customer sentiment and feedback in real-time. The goal is to extract insights from customer behavior and engagement data, optimizing decision-making processes. The model is fine-tuned for Intel hardware to ensure low latency and high efficiency.
+This project is a real-time Customer Experience Analytics System designed for physical retail environments. It leverages computer vision to track visitor footfall and analyze customer sentiment (emotion) from live video feeds.
 
-## 🔥 Features
-- **Sentiment Analysis**: Classifies feedback as positive, negative, or neutral.
-- **Real-time Inference**: Optimized with OpenVINO for high-speed processing.
-- **Industry-Specific Insights**: Customizable for e-commerce, healthcare, or customer support.
-- **Scalability**: Easily integrates with existing feedback systems.
+By combining YOLOv8 for person detection and Intel OpenVINO™ for emotion recognition, the system provides actionable business insights—such as "Total Visitors" and "Customer Happiness Scores"—on a professional, dark-mode dashboard.
+
+## 🔥 Key Features
+- **Live Person Tracking**: Detects and tracks unique visitors in real-time using YOLOv8.
+- **Emotion Recognition**: Analyzes facial expressions (Happy, Neutral, Sad, etc.) using OpenVINO.
+- **Interactive Dashboard**: A professional web interface with live video, active tables, and dynamic charts.
+- **High Performance**: Optimized for standard CPUs using Intel's OpenVINO toolkit.
+- **Privacy Focused**: Processes video locally without sending streams to the cloud.
 
 ## 🏗️ Tech Stack
-- **Programming Language**: Python
-- **AI Frameworks**: TensorFlow, PyTorch, OpenVINO
-- **Deployment**: Flask, Docker
-- **Visualization**: Matplotlib, Seaborn, Plotly
+- **Programming Language**: Python 3.9+
+- **Computer Vision**: Ultralytics YOLOv8, OpenCV, Intel OpenVINO™
+- **Backend**: Flask (Python Web Server), Flask-Sock (WebSockets)
+- **Frontend**: HTML5, CSS3 (Dark Theme), JavaScript, Chart.js
+- **Hardware Support**: Optimized for CPU (Intel Core/Xeon), compatible with GPU.
 
 ## 📂 Project Structure
 ```plaintext
-📁 AI-Sentiment-Feedback-Analysis/
-├── 📁 data/                   # Dataset storage
-├── 📁 models/                 # Trained AI models
-├── 📁 src/                    # Source code
-│   ├── preprocess.py          # Data preprocessing scripts
-│   ├── train.py               # Model training
-│   ├── infer.py               # Inference pipeline
-│   ├── app.py                 # Web API using Flask or FastAPI
-├── 📁 notebooks/              # Jupyter notebooks for experiments
-├── requirements.txt           # Dependencies
-├── Dockerfile                 # Docker configuration
-├── README.md                  # Project documentation
+📁 AI-Powered-Video-Analytics/
+├── 📁 models/                     # AI Models storage
+│   ├── emotions-recognition...xml # OpenVINO Emotion Model
+│   ├── emotions-recognition...bin # Model Weights
+│   └── yolov8n.pt                 # YOLOv8 Person Detection Model
+├── 📁 templates/
+│   └── index.html                 # Professional Dashboard UI
+├── 📁 venv/                       # Virtual Environment (Ignored by Git)
+├── final_demo.py                  # MAIN APPLICATION (Run this file)
+├── requirements.txt               # Project dependencies
+├── .gitignore                     # Git configuration
+└── README.md                      # Project documentation
 ```
 
 ## ⚙️ Installation
 ```bash
-# Clone the repository
-git clone https://github.com/YourUsername/AI-Sentiment-Feedback-Analysis.git
-cd AI-Sentiment-Feedback-Analysis
+#1. Clone the repository
+git clone https://github.com/SubhankarChand/AI-Powered-Video-Analytics-with-OpenVINO.git
+cd AI-Powered-Video-Analytics-with-OpenVINO
 
-# Create a virtual environment
+#2. Set Up Virtual Environment
 python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+# Windows:
+.\venv\Scripts\activate
+# Mac/Linux:
+source venv/bin/activate
 
-# Install dependencies
+#3. Install dependencies
 pip install -r requirements.txt
 ```
 
-## 🏃‍♂️ Running the Project
+## 🏃‍♂️ Running the Application
 ```bash
-# Train the model
-python src/train.py
+#1. Start the System Run the main demo script which starts the Flask server and AI engine:
+python final_demo.py
 
-# Run inference
-python src/infer.py --input "customer_feedback.txt"
+#2. Access the Dashboard Open your web browser and go to:
+[python src/infer.py --input "customer_feedback.txt"](http://localhost:5001)
 
-# Start the web API
-python src/app.py
-```
+#3. Stop the App Press Ctrl + C in your terminal to shut down the server.
 
-## 📊 Model Optimization with OpenVINO
-To optimize the trained model for Intel hardware:
-```bash
-mo --input_model models/trained_model.onnx --output_dir models/openvino/
-```
-
-## 🖥️ Deployment with Docker
-```bash
-# Build Docker image
-docker build -t sentiment-analysis-app .
-
-# Run the container
-docker run -p 5000:5000 sentiment-analysis-app
 ```
 
 ## 📌 Future Improvements
-- Expand dataset for better accuracy.
-- Integrate with customer service chatbots.
-- Support multilingual sentiment analysis.
+- Multi-Camera Support: Scale the system to handle multiple RTSP feeds.
+- Heatmap Generation: Visualize high-traffic zones in the store.
+- Demographic Analysis: Add Age and Gender detection models.
+- Cloud Sync: Push daily summary reports to a cloud database (AWS/Firebase).
 
 ## 🤝 Contributing
-Feel free to contribute by opening issues or submitting pull requests!
+Contributions are welcome! Please open an issue or submit a pull request if you have ideas for optimization or new features.
 
 ## 📜 License
 
