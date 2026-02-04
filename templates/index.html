@@ -1,184 +1,306 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Customer Analytics</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Analytics | Professional Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
         }
-        .container { 
-            display: flex; 
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .video-container { 
-            flex: 2; 
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .analytics-container { 
-            flex: 1; 
-            background: white;
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        #videoFeed { 
-            width: 100%; 
-            border-radius: 4px;
-            display: block;
-        }
-        .stats { 
-            margin-top: 20px; 
-        }
-        .status-bar {
+
+        .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 8px 12px;
-            background: #f0f0f0;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 0 10px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+        }
+
+        .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
+        .header .status { font-size: 14px; color: var(--success); display: flex; align-items: center; gap: 8px; }
+        .pulsing-dot { width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Video Section */
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            padding: 4px 12px;
             border-radius: 4px;
-            font-size: 14px;
-        }
-        .chart-container {
-            margin-top: 20px;
-            height: 250px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        h2, h3 {
-            color: #444;
-        }
-        .alert {
-            color: #d9534f;
+            font-size: 12px;
             font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Stats Sidebar */
+        .stats-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .stat-info h3 { margin: 0; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .stat-info p { margin: 5px 0 0; font-size: 28px; font-weight: 700; }
+
+        .chart-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            height: 300px;
+            position: relative;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            flex-grow: 1;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; color: var(--text-muted); font-size: 12px; padding: 10px 0; border-bottom: 1px solid #334155; }
+        td { padding: 12px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }
+        
+        .emotion-tag {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        /* Strict Color Mapping */
+        .emo-neutral { background: #94a3b8; color: white; } /* Grey */
+        .emo-happy { background: #22c55e; color: white; }   /* Green */
+        .emo-sad { background: #3b82f6; color: white; }     /* Blue */
+        .emo-anger { background: #ef4444; color: white; }   /* Red */
+        .emo-surprise { background: #eab308; color: white; } /* Yellow */
+        .emo-unknown { background: #475569; color: white; } /* Dark Grey */
+
+        @keyframes pulse {
+            0% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { opacity: 1; box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
     </style>
 </head>
 <body>
-    <h1>Customer Analytics Dashboard</h1>
-    
-    <div class="container">
-        <div class="video-container">
-            <div class="status-bar">
-                <div id="connectionStatus">🟢 Connected</div>
-                <div>Last update: <span id="updateTime">Just now</span></div>
-                <div>FPS: <span id="fpsCounter">0</span></div>
-            </div>
-            <img id="videoFeed" src="{{ url_for('video_feed') }}">
+    <div class="header">
+        <h1><i class="fas fa-eye"></i> AI Vision Analytics</h1>
+        <div class="status">
+            <div class="pulsing-dot"></div>
+            System Online
         </div>
-        
-        <div class="analytics-container">
-            <h2>Real-time Analytics</h2>
-            
-            <div class="stats">
-                <h3>Visitor Count</h3>
-                <p>Total Visitors: <span id="totalVisitors">0</span></p>
-                <p>Active Visitors: <span id="activeVisitors">0</span></p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="video-card">
+            <div class="live-badge">LIVE FEED</div>
+            <img src="{{ url_for('video_feed') }}" alt="Video Feed">
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="icon-box"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3>Total Visitors</h3>
+                    <p id="totalVisitors">0</p>
+                </div>
             </div>
-            
-            <div class="stats">
-                <h3>Emotion Analysis</h3>
-                <div id="emotionCounts"></div>
+
+            <div class="stat-card">
+                <div class="icon-box" style="color: #22c55e; background: rgba(34, 197, 94, 0.1);"><i class="fas fa-walking"></i></div>
+                <div class="stat-info">
+                    <h3>Active Now</h3>
+                    <p id="activeVisitors">0</p>
+                </div>
             </div>
-            
-            <div class="chart-container">
-                <canvas id="emotionChart"></canvas>
+
+            <div class="chart-card">
+                <h3 style="margin-top:0; font-size:14px; color:#94a3b8;">Emotion Distribution</h3>
+                <div style="height: 240px;">
+                    <canvas id="emotionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <h3 style="margin-top:0; font-size:14px; color:#94a3b8;">Active Tracking Logs</h3>
+                <table id="logTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>Detected Emotion</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize chart
+        // Define Exact Colors for Each Emotion
+        const emotionColors = {
+            'neutral': '#94a3b8',  // Grey
+            'happy': '#22c55e',    // Green
+            'sad': '#3b82f6',      // Blue
+            'anger': '#ef4444',    // Red
+            'surprise': '#eab308', // Yellow
+            'waiting': '#1e293b'   // Dark Background (Empty)
+        };
+
         const ctx = document.getElementById('emotionChart').getContext('2d');
-        const chart = new Chart(ctx, {
+        const emotionChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: [],
+                labels: ['Waiting'],
                 datasets: [{
-                    data: [],
-                    backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
-                    ],
-                    borderWidth: 1
+                    data: [1],
+                    backgroundColor: [emotionColors['waiting']],
+                    borderWidth: 0,
+                    hoverOffset: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'right'
+                    legend: { 
+                        position: 'right', 
+                        labels: { 
+                            color: '#94a3b8', 
+                            font: { size: 11 },
+                            padding: 20
+                        } 
                     }
-                }
+                },
+                cutout: '75%'
             }
         });
 
-        // WebSocket connection
+        // WebSocket Connection
         const ws = new WebSocket(`ws://${window.location.host}/updates`);
-        let lastUpdate = Date.now();
-        
-        // Update UI elements
-        function updateDashboard(data) {
-            // Visitor counts
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+
+            // 1. Update Counters
             document.getElementById('totalVisitors').textContent = data.total_visitors;
             document.getElementById('activeVisitors').textContent = data.active_visitors;
-            
-            // FPS counter
-            document.getElementById('fpsCounter').textContent = data.fps || 0;
-            
-            // Emotion counts
-            let emotionHtml = '';
-            for (const [emotion, count] of Object.entries(data.emotion_stats || {})) {
-                emotionHtml += `<p>${emotion.charAt(0).toUpperCase() + emotion.slice(1)}: ${count}</p>`;
+
+            // 2. Update Chart with Correct Colors
+            if (data.emotion_stats && Object.keys(data.emotion_stats).length > 0) {
+                // Filter out 'waiting' if real data exists
+                const validStats = {...data.emotion_stats};
+                delete validStats['waiting'];
+                
+                if (Object.keys(validStats).length > 0) {
+                    const labels = Object.keys(validStats);
+                    const values = Object.values(validStats);
+                    
+                    // Map the correct color for each label
+                    const bgColors = labels.map(label => emotionColors[label] || '#94a3b8');
+
+                    emotionChart.data.labels = labels.map(l => l.toUpperCase());
+                    emotionChart.data.datasets[0].data = values;
+                    emotionChart.data.datasets[0].backgroundColor = bgColors;
+                    emotionChart.update();
+                }
             }
-            document.getElementById('emotionCounts').innerHTML = emotionHtml || '<p>No emotion data</p>';
+
+            // 3. Update Table
+            const tbody = document.querySelector('#logTable tbody');
+            tbody.innerHTML = ''; 
             
-            // Update chart
-            if (data.emotion_stats) {
-                chart.data.labels = Object.keys(data.emotion_stats).map(e => 
-                    e.charAt(0).toUpperCase() + e.slice(1));
-                chart.data.datasets[0].data = Object.values(data.emotion_stats);
-                chart.update();
+            if (data.active_list && data.active_list.length > 0) {
+                data.active_list.forEach(person => {
+                    // Use a fallback if emotion is undefined
+                    const emoClass = person.emotion ? `emo-${person.emotion}` : 'emo-neutral';
+                    const emoText = person.emotion || 'detecting...';
+                    
+                    const row = `
+                        <tr>
+                            <td>#${person.id}</td>
+                            <td style="color:#22c55e; font-size:12px;">● Live</td>
+                            <td><span class="emotion-tag ${emoClass}">${emoText}</span></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#475569; padding:20px; font-size:13px;">Waiting for visitors...</td></tr>';
             }
-            
-            // Update timestamp
-            lastUpdate = Date.now();
-            document.getElementById('updateTime').textContent = 
-                new Date(data.timestamp).toLocaleTimeString();
-        }
-        
-        // Connection handling
-        ws.onmessage = function(event) {
-            updateDashboard(JSON.parse(event.data));
         };
-        
-        ws.onclose = function() {
-            document.getElementById('connectionStatus').innerHTML = 
-                '<span class="alert">🔴 Disconnected - Attempting to reconnect...</span>';
-            setTimeout(() => location.reload(), 2000);
-        };
-        
-        ws.onerror = function(error) {
-            console.error('WebSocket error:', error);
-        };
-        
-        // Update "time ago" indicator
-        setInterval(() => {
-            const seconds = Math.floor((Date.now() - lastUpdate)/1000);
-            if (seconds > 5) {
-                document.getElementById('updateTime').textContent = 
-                    `${seconds} seconds ago`;
-            }
-        }, 1000);
     </script>
 </body>
 </html>
