@@ -74,4 +74,4 @@ python final_demo.py
 Contributions are welcome! Please open an issue or submit a pull request if you have ideas for optimization or new features.
 
 ## 📜 License
-
+This project is licensed under the MIT License. See the LICENSE file for details.
