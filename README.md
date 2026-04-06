@@ -29,21 +29,26 @@ By combining **YOLOv8** for person detection and **Intel® OpenVINO™** for hig
 ├── final_demo.py            # MAIN APPLICATION ENTRY POINT
 ├── retail_analytics.db      # SQLite Database (Auto-generated)
 └── README.md                # Project Documentation
-⚙️ Installation & Setup
-1. Clone the Repository
-Bash
+```
+
+## ⚙️ Installation & Setup
+* 1. Clone the Repository
+``` bash
 git clone [https://github.com/SubhankarChand/AI-Powered-Video-Analytics-with-OpenVINO.git](https://github.com/SubhankarChand/AI-Powered-Video-Analytics-with-OpenVINO.git)
 cd AI-Powered-Video-Analytics-with-OpenVINO
-2. Set Up Virtual Environment
-Bash
+``` 
+* 2. Set Up Virtual Environment
+``` Bash
 python -m venv venv
 # Windows:
 .\venv\Scripts\activate
 # Mac/Linux:
 source venv/bin/activate
+```
 3. Install Dependencies
-Bash
+``` Bash
 pip install -r requirements.txt
+```
 4. Configure Environment Variables
 Create a .env file in the root directory and add your SMTP credentials to enable email alerts:
 
@@ -54,14 +59,14 @@ EMAIL_RECEIVER=target_email@gmail.com
 🏃‍♂️ Running the Application
 Start the Engine: Run the main script to initialize the Flask server and AI models:
 
-Bash
+```Bash
 python final_demo.py
 Access the Dashboard: Open your browser and navigate to:
 http://localhost:5001
-
+``` 
 Stop the App: Press Ctrl + C in the terminal to shut down the server.
 
-📌 Future Improvements
+## 📌 Future Improvements
 Multi-Camera Support: Scale to handle multiple RTSP streams simultaneously.
 
 Heatmap Generation: Visualize high-traffic zones within the retail space.
