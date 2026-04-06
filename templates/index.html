@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Vision Analytics | Professional Dashboard</title>
+    <title>AI Vision Analytics | Pro Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -14,172 +14,191 @@
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --success: #22c55e;
-        }
-        
-        body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
+            --border: #334155;
+            --neutral-gray: #64748b; /* Matches Chart Neutral */
         }
 
+        /* SCREEN LOCK - Eliminates Scrolling */
+        html, body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 12px;
+            box-sizing: border-box;
+            gap: 12px;
+        }
+
+        /* HEADER SECTION */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding: 0 10px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
+            flex-shrink: 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header-left h1 { margin: 0; font-size: 18px; font-weight: 600; }
+        .status-text { font-size: 11px; color: var(--success); display: flex; align-items: center; gap: 6px; }
+        .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+
+        /* MAIN LAYOUT */
+        .dashboard-main {
+            display: flex;
+            gap: 15px;
+            flex-grow: 1;
+            min-height: 0; /* Critical for flex-child height limiting */
         }
 
-        .header-left h1 { margin: 0; font-size: 24px; font-weight: 600; }
-        .header-left .status { font-size: 14px; color: var(--success); display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-        .pulsing-dot { width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
-
-        /* NEW: Download Button Style */
-        .btn-download {
-            background-color: var(--accent);
-            color: #0f172a;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
+        /* VIDEO AREA */
+        .video-wrapper {
+            flex: 2.2; 
+            background: #000;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden; /* Clips the "overflowing" parts of the video */
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-        .btn-download:hover { background-color: #0ea5e9; transform: translateY(-2px); }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-            max-width: 1600px;
-            margin: 0 auto;
+            justify-content: center;
         }
 
-        .video-card {
+        .video-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* CHANGED FROM contain TO cover */
+            /* object-fit: cover ensures the video fills the box, 
+               even if it has to crop the sides slightly */
+        }
+
+        /* SIDEBAR AREA */
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 300px;
+        }
+
+        /* DATA CARDS */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .small-card {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 5px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-            border: 1px solid #334155;
-            position: relative;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon-sm { width: 32px; height: 32px; background: rgba(56,189,248,0.1); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .stat-val { margin: 0; font-size: 20px; font-weight: 700; }
+        .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin: 0; }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            height: 180px;
+        }
+
+        /* TABLE AREA - THE ONLY SCROLLABLE PART */
+        .log-container {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
-        
-        .video-card img { width: 100%; height: auto; border-radius: 8px; display: block; }
-        .live-badge { position: absolute; top: 20px; left: 20px; background: rgba(220, 38, 38, 0.9); color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .scroll-area { overflow-y: auto; flex-grow: 1; margin-top: 8px; padding-right: 5px; }
+        .scroll-area::-webkit-scrollbar { width: 4px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
-        .stats-panel { display: flex; flex-direction: column; gap: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 10px; color: var(--text-muted); text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card-bg); }
+        td { padding: 10px 0; border-bottom: 1px solid #2d3748; font-size: 12px; }
 
-        .stat-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        /* DYNAMIC TAGS */
+        .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .emo-neutral { background: var(--neutral-gray); color: white; }
+        .emo-happy { background: #166534; color: #4ade80; }
+        .emo-sad { background: #1e3a8a; color: #60a5fa; }
+        .emo-anger { background: #7f1d1d; color: #f87171; }
+        .emo-surprise { background: #713f12; color: #fbbf24; }
 
-        .icon-box { width: 50px; height: 50px; background: rgba(56, 189, 248, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 20px; }
-        .stat-info h3 { margin: 0; font-size: 14px; color: var(--text-muted); font-weight: 500; }
-        .stat-info p { margin: 5px 0 0; font-size: 28px; font-weight: 700; }
-
-        .chart-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #334155; height: 300px; }
-        .table-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #334155; flex-grow: 1; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: var(--text-muted); font-size: 12px; padding: 10px 0; border-bottom: 1px solid #334155; }
-        td { padding: 12px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }
-        
-        .emotion-tag { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
-        .emo-neutral { background: #94a3b8; color: white; }
-        .emo-happy { background: #22c55e; color: white; }
-        .emo-sad { background: #3b82f6; color: white; }
-        .emo-anger { background: #ef4444; color: white; }
-        .emo-surprise { background: #eab308; color: white; }
-        .emo-unknown { background: #475569; color: white; }
-
-        @keyframes pulse {
-            0% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { opacity: 1; box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-            100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
+        .btn-export { background: var(--accent); color: #0f172a; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; transition: 0.2s; }
+        .btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-left">
-            <h1><i class="fas fa-eye"></i> AI Vision Analytics</h1>
-            <div class="status">
-                <div class="pulsing-dot"></div>
-                System Online
+
+    <div class="app-container">
+        <header class="header">
+            <div class="header-left">
+                <h1>AI Vision Analytics</h1>
+                <div class="status-text"><div class="dot"></div> System Active & Optimized</div>
             </div>
-        </div>
-        <a href="/download_report" class="btn-download">
-            <i class="fas fa-download"></i> Download Report
-        </a>
-    </div>
+            <a href="/download_report" class="btn-export"><i class="fas fa-file-export"></i> Export Report</a>
+        </header>
 
-    <div class="dashboard-grid">
-        <div class="video-card">
-            <div class="live-badge">LIVE FEED</div>
-            <img src="{{ url_for('video_feed') }}" alt="Video Feed">
-        </div>
+        <div class="dashboard-main">
+            <div class="video-wrapper">
+                <div class="live-tag">LIVE FEED</div>
+                <img src="{{ url_for('video_feed') }}" alt="Video Stream">
+            </div>
 
-        <div class="stats-panel">
-            <div class="stat-card">
-                <div class="icon-box"><i class="fas fa-users"></i></div>
-                <div class="stat-info">
-                    <h3>Total Visitors</h3>
-                    <p id="totalVisitors">0</p>
+            <aside class="sidebar">
+                <div class="stat-grid">
+                    <div class="small-card">
+                        <div class="icon-sm"><i class="fas fa-users"></i></div>
+                        <div><p class="stat-label">Total</p><p class="stat-val" id="totalVisitors">0</p></div>
+                    </div>
+                    <div class="small-card">
+                        <div class="icon-sm" style="color:var(--success)"><i class="fas fa-street-view"></i></div>
+                        <div><p class="stat-label">Active</p><p class="stat-val" id="activeVisitors">0</p></div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="stat-card">
-                <div class="icon-box" style="color: #22c55e; background: rgba(34, 197, 94, 0.1);"><i class="fas fa-walking"></i></div>
-                <div class="stat-info">
-                    <h3>Active Now</h3>
-                    <p id="activeVisitors">0</p>
+                <div class="chart-container">
+                    <p class="stat-label" style="margin-bottom: 10px;">Emotion Distribution</p>
+                    <div style="height: 140px;"><canvas id="emotionChart"></canvas></div>
                 </div>
-            </div>
 
-            <div class="chart-card">
-                <h3 style="margin-top:0; font-size:14px; color:#94a3b8;">Emotion Distribution</h3>
-                <div style="height: 240px;">
-                    <canvas id="emotionChart"></canvas>
+                <div class="log-container">
+                    <p class="stat-label">Active Tracking Log</p>
+                    <div class="scroll-area">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Status</th><th>Sentiment</th></tr>
+                            </thead>
+                            <tbody id="logTable"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-
-            <div class="table-card">
-                <h3 style="margin-top:0; font-size:14px; color:#94a3b8;">Active Tracking Logs</h3>
-                <table id="logTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Status</th>
-                            <th>Detected Emotion</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            </aside>
         </div>
     </div>
 
     <script>
-        const emotionColors = { 'neutral': '#94a3b8', 'happy': '#22c55e', 'sad': '#3b82f6', 'anger': '#ef4444', 'surprise': '#eab308', 'waiting': '#1e293b' };
+        const colors = { 'neutral': '#64748b', 'happy': '#22c55e', 'sad': '#3b82f6', 'anger': '#ef4444', 'surprise': '#eab308', 'waiting': '#1e293b' };
         const ctx = document.getElementById('emotionChart').getContext('2d');
         const emotionChart = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels: ['Waiting'], datasets: [{ data: [1], backgroundColor: [emotionColors['waiting']], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } }, cutout: '75%' }
+            data: { labels: ['Scanning'], datasets: [{ data: [1], backgroundColor: [colors['waiting']], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } } }, cutout: '75%' }
         });
 
         const ws = new WebSocket(`ws://${window.location.host}/updates`);
@@ -189,28 +208,29 @@
             document.getElementById('activeVisitors').textContent = data.active_visitors;
 
             if (data.emotion_stats && Object.keys(data.emotion_stats).length > 0) {
-                const validStats = {...data.emotion_stats};
-                delete validStats['waiting'];
-                if (Object.keys(validStats).length > 0) {
-                    const labels = Object.keys(validStats);
-                    const values = Object.values(validStats);
-                    const bgColors = labels.map(label => emotionColors[label] || '#94a3b8');
-                    emotionChart.data.labels = labels.map(l => l.toUpperCase());
-                    emotionChart.data.datasets[0].data = values;
-                    emotionChart.data.datasets[0].backgroundColor = bgColors;
+                const stats = {...data.emotion_stats}; delete stats['waiting'];
+                if (Object.keys(stats).length > 0) {
+                    emotionChart.data.labels = Object.keys(stats).map(l => l.toUpperCase());
+                    emotionChart.data.datasets[0].data = Object.values(stats);
+                    emotionChart.data.datasets[0].backgroundColor = Object.keys(stats).map(l => colors[l]);
                     emotionChart.update();
                 }
             }
 
-            const tbody = document.querySelector('#logTable tbody');
+            const tbody = document.getElementById('logTable');
             tbody.innerHTML = ''; 
-            if (data.active_list && data.active_list.length > 0) {
-                data.active_list.forEach(person => {
-                    const emoClass = person.emotion ? `emo-${person.emotion}` : 'emo-neutral';
-                    const emoText = person.emotion || 'detecting...';
-                    tbody.innerHTML += `<tr><td>#${person.id}</td><td style="color:#22c55e; font-size:12px;">● Live</td><td><span class="emotion-tag ${emoClass}">${emoText}</span></td></tr>`;
+            if (data.active_list.length > 0) {
+                data.active_list.forEach(p => {
+                    const emo = p.emotion || 'neutral';
+                    tbody.innerHTML += `<tr>
+                        <td style="font-weight:600;">#${p.id}</td>
+                        <td><span style="color:var(--success)">● Live</span></td>
+                        <td><span class="tag emo-${emo}">${emo}</span></td>
+                    </tr>`;
                 });
-            } else { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#475569; padding:20px;">Waiting...</td></tr>'; }
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding-top:20px; color:var(--text-muted)">Searching...</td></tr>';
+            }
         };
     </script>
 </body>
