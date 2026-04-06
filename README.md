@@ -67,13 +67,13 @@ http://localhost:5001
 Stop the App: Press Ctrl + C in the terminal to shut down the server.
 
 ## 📌 Future Improvements
--- Multi-Camera Support: Scale to handle multiple RTSP streams simultaneously.
+- Multi-Camera Support: Scale to handle multiple RTSP streams simultaneously.
 
--- Heatmap Generation: Visualize high-traffic zones within the retail space.
+- Heatmap Generation: Visualize high-traffic zones within the retail space.
 
--- Demographic Analysis: Implement Age and Gender detection models.
+- Demographic Analysis: Implement Age and Gender detection models.
 
--- Cloud Integration: Sync daily summary reports to AWS or Firebase.
+- Cloud Integration: Sync daily summary reports to AWS or Firebase.
 
 🤝 Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any optimizations or feature requests.
