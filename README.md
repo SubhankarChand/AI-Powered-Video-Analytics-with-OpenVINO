@@ -50,12 +50,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 4. Configure Environment Variables
-Create a .env file in the root directory and add your SMTP credentials to enable email alerts:
+- Create a .env file in the root directory and add your SMTP credentials to enable email alerts:
 
 Code snippet
+``` bash
 EMAIL_SENDER=your_email@gmail.com
 EMAIL_PASSWORD=your_app_password
 EMAIL_RECEIVER=target_email@gmail.com
+``` 
 🏃‍♂️ Running the Application
 Start the Engine: Run the main script to initialize the Flask server and AI models:
 
